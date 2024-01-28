@@ -81,7 +81,6 @@ echo 'P2WSH Address: ' . $p2wshAddress . "\n";
 
 $wallet = array("Seed" => $seed, "Address" => $p2wpkhaddress);
 
-
 // Address used: tb1q6qrae368rg5jpze6huc76qg37ecmucmhpjqa9t (Native Segwit)
 // Construct a transaction
 
