@@ -80,7 +80,6 @@ $p2wshAddress = $p2wsh->getAddress($network);
 echo 'P2WSH Address: ' . $p2wshAddress . "\n";
 
 $wallet = array("Seed" => $seed, "Address" => $p2wpkhaddress);
-echo 'Wallet: ' . $wallet["Seed"] . "\n";
 
 
 // Address used: tb1q6qrae368rg5jpze6huc76qg37ecmucmhpjqa9t (Native Segwit)
