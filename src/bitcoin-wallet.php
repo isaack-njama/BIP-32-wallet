@@ -15,13 +15,22 @@ use BitWasp\Bitcoin\Mnemonic\Bip39\Bip39SeedGenerator;
 use BitWasp\Bitcoin\Mnemonic\MnemonicFactory;
 use BitWasp\Bitcoin\Network\NetworkFactory;
 use BitWasp\Bitcoin\Script\WitnessProgram;
-
-$txid = 
-$vout = 0;
+use BitWasp\Bitcoin\Script\ScriptFactory;
+use BitWasp\Bitcoin\Script\Opcodes;
+use BitWasp\Bitcoin\Script\ScriptType;
+use BitWasp\Bitcoin\Script\P2shScript;
+use BitWasp\Bitcoin\Transaction\Factory\TxBuilder;
+use BitWasp\Bitcoin\Transaction\Factory\Signer;
+use BitWasp\Buffertools\Buffer;
+use BitWasp\Bitcoin\Transaction\OutPoint;
 
 Bitcoin::setNetwork(NetworkFactory::bitcoinTestnet());
 $network = Bitcoin::getNetwork();
 $ecAdapter = Bitcoin::getEcAdapter();
+
+function bytes_to_hex($byte_str) {
+    return bin2hex($byte_str);
+}
 
 // Generate a mnemonic
 $random = new Random();
@@ -53,6 +62,7 @@ $publicKey = $externalKey->getPublicKey();
 
 // Derive the public key hash
 $publicKeyHash = $publicKey->getPubKeyHash();
+echo 'Public Key Hash: ' . $publicKeyHash->getHex() . "\n";
 
 // Derive the pay to public key hash address
 $p2pkh = new PayToPubKeyHashAddress($publicKeyHash);
@@ -60,7 +70,15 @@ $p2pkhAddress = $p2pkh->getAddress($network);
 echo 'P2PKH Address: ' . $p2pkhAddress . "\n";
 
 // Derive the redeem script
-$redeemScript = $p2pkh->getScriptPubKey();
+$preimage = 'Btrust Builders';
+$lock_hex = hash('sha256', $preimage);
+$redeemScript = ScriptFactory::create()
+    ->op('OP_SHA256')
+    ->push(Buffer::hex($lock_hex))
+    ->op('OP_EQUAL')
+    ->getScript();
+
+echo 'Redeem Script: ' . $redeemScript->getHex() . "\n";
 
 // Derive the P2SH address
 $p2sh = new ScriptHashAddress($redeemScript->getScriptHash());
@@ -79,12 +97,23 @@ $p2wsh = new SegwitAddress($p2wshWP);
 $p2wshAddress = $p2wsh->getAddress($network);
 echo 'P2WSH Address: ' . $p2wshAddress . "\n";
 
-$wallet = array("Seed" => $seed, "Address" => $p2wpkhaddress);
-
 // Address used: tb1q6qrae368rg5jpze6huc76qg37ecmucmhpjqa9t (Native Segwit)
 // Construct a transaction
+$addrCreator = new AddressCreator();
+$txID = 'e31d31c51f01f8e99d9f4c7ddac6b5554c7d119907c3807e388a1f2c793fdcb0';
+$spendOutput = new Outpoint(Buffer::hex('e31d31c51f01f8e99d9f4c7ddac6b5554c', 32), 0);
+$recipient = $p2shAddress;
 
+// Construct a transaction
+$tx = (new TxBuilder())
+    ->spendOutPoint($spendOutput)
+    ->payToAddress(10000, $p2pkh)
+    ->get();
+
+// Sign the transaction
+$signer = new Signer($tx, $ecAdapter);
+$signedTx = $signer->sign(0, $externalKey, $txID);
+
+echo $signedTx->getHex() . "\n";
 
 ?>
-
-
