@@ -120,5 +120,5 @@ $input = $signer->input(0, $txOut, $signData);
 $input -> sign($privateKey);
 $signed = $signer->get();
 
-echo $signed->getHex() . "\n";
+echo "Signed transaction: " . $signed->getHex() . "\n";
 ?>
