@@ -11,7 +11,7 @@ To run the project on repl.it, follow these steps:
 3. Open the shell within the repl or use this key combo to open the shell:
 
 ```
-    Ctrl + Shift + S
+Ctrl + Shift + S
 ```
 
 4. Run the following command:
@@ -27,7 +27,8 @@ This command will execute the Bitcoin wallet application within the repl environ
 Contributions are welcome! If you would like to contribute to this project, feel free to fork the repository and submit a pull request.
 
 ## Contact
-For any inquiries or feedback, please contact me at isaacknjama@proton.me.
+
+For any inquiries or feedback, please contact me at <isaacknjama@proton.me>
 
 ## License
 
